@@ -50,49 +50,53 @@ def get_data(linesz, linesx, linesy):
 
 def getNearCoef(arr, xMean):
     for i in range(len(arr)):
-        if arr[i] > xMean:
+        if arr[i] >= xMean:
             return i
 
-def getFirstColumnTable(arr, n, coef):
+def blcoord(c, nc, linesc):
+    newc = []
+    mini = abs(linesc[0] - c)
+    blc = 0
+    for i in range(len(linesc)):
+        if abs(linesc[i] - c) < mini:
+            mini = abs(linesc[i] - c)
+            blc = i
     start = 0
     end = 0
-    if (coef - n // 2 >= 0):
-        start = coef - n// 2
+    if (blc - nc // 2 >= 0):
+        start = blc - nc // 2
     if (start == 0):
-        end = n + 1
+        end = nc + 1
     else:
-        end = coef + n // 2 + n % 2 + 1
-        if (end > n):
-            start -= (end - n - 2) 
-            end = n + 1
-    arr_copy = []
-    #print(coef, start, end)
+        end = blc + nc // 2 + nc % 2 + 1
+    if (end > len(linesc)):
+        end = len(linesc)
+        start = end - nc - 1
     for i in range(start, end):
-        arr_copy.append(arr[i])
+        newc.append(linesc[i])
+    return newc
     
-    return arr_copy
+def table_for_nuoton(x, y, z, nx, ny, nz):
+    newz = blcoord(z, nz, linesz)
+    newx = []
+    for i in newz:
+        newx.append(blcoord(x, nx, linesx[linesz.index(i)]))
+    newy = []
+    for i in newz:
+        newy.append(blcoord(y, ny, linesy[linesz.index(i)]))
+    
+    newt = []
+    for i in range(len(newz)):
+        newt.append([])
+        for j in range(len(newy[i])):
+            newt[i].append([])
+            for k in range(len(newx[i])):
+                zpos = linesz.index(newz[i])
+                ypos = linesy[i].index(newy[i][j])
+                xpos = linesx[i].index(newx[i][k])
+                newt[i][j].append(table[zpos][ypos][xpos])
 
-
-def create_n_table(z, y, x, nx, ny, nz, xMean, yMean, zMean):
-    table = np.zeros([nz + 1, ny + 1, nx + 1])
-    for i in range(nz + 1):
-        for j in range(ny + 1):
-            coef = getNearCoef(x[i][j], xMean)
-            arr = getFirstColumnTable(x[i][j], nx + 1, coef)
-            for k in range(nx + 1):
-                table[i][j][k] = arr[k]
-    linesy = np.zeros([nz + 1, ny + 1])
-    for i in range(nz + 1):
-        coef = getNearCoef(y[i], yMean)
-        arr = getFirstColumnTable(y[i], ny + 1, coef)
-        for j in range(ny + 1):
-            linesy[i][j] = arr[j]
-    linesz = np.zeros(nz + 1)
-    coef = getNearCoef(z, zMean)
-    arr = getFirstColumnTable(z, nz + 1, coef)
-    for i in range(nz + 1):
-        linesz[i] = arr[i]
-    return table, linesy, linesz
+    return newx, newy, newz, newt
 
 
 def getDivededDiff(x, y, n):
@@ -106,22 +110,21 @@ def getDivededDiff(x, y, n):
     return table
 
 def getNewtonPoly(table, x, xMean, n):
-    yx = table[0]
-    p = xMean - x[0]
-    for i in range(1, n):
-        yx += table[i] * p
-        p *= xMean - x[i]
-    return yx
+    n = n -1
+    p = table[n]
+    for k in range(1, n + 1):
+        p = table[n - k] + (xMean - x[n - k]) * p
+    return p
 
 def get_answer(x, z, y, nx, ny, nz, xMean, yMean, zMean):
-    #print(x)
-    #print(y)
-    #print(z)
+    print(x)
+    print(y)
+    print(z)
     yInter = np.zeros([nz + 1, ny + 1])
     for i in range(0, nz + 1):
         for j in range(0 , ny + 1):
-            table = getDivededDiff(x[i][j], y[i], nx + 1)[0, :]
-            yInter[i][j] = getNewtonPoly(table, x[i][j], xMean, nx + 1)
+            table = getDivededDiff(y[i], x[i][j], nx + 1)[0, :]
+            yInter[i][j] = getNewtonPoly(table, y[i], xMean, nx + 1)
     print(yInter)
     zInter = []
     for i in range(nz + 1):
@@ -138,5 +141,5 @@ if __name__ == '__main__':
     xMean, yMean, zMean = map(float, input("Input x, y, z: ").split())
     linesz, linesx, linesy = [], [], []
     table, linesy, linesz = get_data(linesz, linesx, linesy)
-    table, linesy, linesz = create_n_table(linesz, linesy, table, nx, ny, nz, xMean, yMean, zMean)
-    print(get_answer(table, linesz, linesy, nx, ny, nz, xMean, yMean, zMean))
+    x, y, z, table = table_for_nuoton(xMean, yMean, zMean, nx, ny, nz)
+    print(get_answer(table, z, y, nx, ny, nz, xMean, yMean, zMean))

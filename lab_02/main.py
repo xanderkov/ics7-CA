@@ -1,102 +1,90 @@
-from cmath import nan
-import scipy
-import matplotlib
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from mpl_toolkits import mplot3d
 
 
 def get_polynomial_degree():
     nx, ny, nz = map(int, input("Input polynomials degrees: ").split())
     return nx, ny, nz
 
-
-def get_x_line(data, arr):
-    print(data)
-    for i in range(len(data) - 1):
-        arr[i] = data[i]
-
-def get_data(linesz, linesx, linesy):
+def get_data(zArr, xArr, yArr):
     file = open("2.txt")
     table_lines = [line.strip() for line in file]
     z = 0
     coly = 5
     ys = []
-    nnum = []
-    nnnum = []
+    matrix = []
+    table = []
     for line in table_lines:
         if line == "":
-            nnnum.append(nnum)
-            nnum = []
+            table.append(matrix)
+            matrix = []
         elif "z=" in line:
             z = float(line[list(line).index("=") + 1])
-            linesz.append(z)
+            zArr.append(z)
         elif "y" in line:
             xs = list(map(float, line[3:].split()))
-            linesx.append(xs)
+            xArr.append(xs)
         else:
             linesnum = list(map(float, line.split()))
-            nnum.append(linesnum)
+            matrix.append(linesnum)
             y = linesnum[0]
             ys.append(y)
             if (len(ys) == coly):
-                linesy.append(ys)
+                yArr.append(ys)
                 ys = []
             linesnum.pop(0)
-    nnnum.append(nnum)
-    return nnnum, linesy, linesz
+    table.append(matrix)
+    return table, yArr, zArr
+        
+
+def findCoefIndex(line, coef):
+    index = 0
+    for i in range(len(line)):
+        if abs(line[i] - coef) < abs(line[index] - coef):
+            index = i
+    return index
 
 
-def getNearCoef(arr, xMean):
-    for i in range(len(arr)):
-        if arr[i] >= xMean:
-            return i
-
-def blcoord(c, nc, linesc):
-    newc = []
-    mini = abs(linesc[0] - c)
-    blc = 0
-    for i in range(len(linesc)):
-        if abs(linesc[i] - c) < mini:
-            mini = abs(linesc[i] - c)
-            blc = i
+def findStartEndIndexes(n, index):
     start = 0
     end = 0
-    if (blc - nc // 2 >= 0):
-        start = blc - nc // 2
+    if (index - n // 2 >= 0):
+        start = index - n // 2
     if (start == 0):
-        end = nc + 1
+        end = n + 1
     else:
-        end = blc + nc // 2 + nc % 2 + 1
-    if (end > len(linesc)):
-        end = len(linesc)
-        start = end - nc - 1
-    for i in range(start, end):
-        newc.append(linesc[i])
-    return newc
-    
-def table_for_nuoton(x, y, z, nx, ny, nz):
-    newz = blcoord(z, nz, linesz)
-    newx = []
-    for i in newz:
-        newx.append(blcoord(x, nx, linesx[linesz.index(i)]))
-    newy = []
-    for i in newz:
-        newy.append(blcoord(y, ny, linesy[linesz.index(i)]))
-    
-    newt = []
-    for i in range(len(newz)):
-        newt.append([])
-        for j in range(len(newy[i])):
-            newt[i].append([])
-            for k in range(len(newx[i])):
-                zpos = linesz.index(newz[i])
-                ypos = linesy[i].index(newy[i][j])
-                xpos = linesx[i].index(newx[i][k])
-                newt[i][j].append(table[zpos][ypos][xpos])
+        end = index + n // 2 + n % 2 + 1
+    if (end > n + 1):
+        end = n + 1
+        start = end - n - 1
+    return start, end
 
-    return newx, newy, newz, newt
+def getnArr(coef, n, line):
+    newArr = []
+    index = findCoefIndex(line, coef)
+    start, end = findStartEndIndexes(n, index)
+    for i in range(start, end):
+        newArr.append(line[i])
+    return newArr
+    
+def getnTable(x, y, z, nx, ny, nz, xArr, yArr, zArr):
+    newzArr = getnArr(z, nz, zArr)
+    newXArr = []
+    newYArr = []
+    for i in newzArr:
+        newXArr.append(getnArr(x, nx, xArr[zArr.index(i)]))
+        newYArr.append(getnArr(y, ny, yArr[zArr.index(i)]))
+    
+    newTable = np.zeros([nz + 1, ny + 1, nx + 1])
+    for i in range(nz + 1):
+        for j in range(ny + 1):
+            for k in range(nx + 1):
+                zIndex = zArr.index(newzArr[i])
+                yIndex = yArr[i].index(newYArr[i][j])
+                xIndex = xArr[i].index(newXArr[i][k])
+                newTable[i][j][k] = table[zIndex][yIndex][xIndex]
+
+    return newXArr, newYArr, newzArr, newTable
 
 
 def getDivededDiff(x, y, n):
@@ -110,27 +98,29 @@ def getDivededDiff(x, y, n):
     return table
 
 def getNewtonPoly(table, x, xMean, n):
-    n = n -1
+    n = n - 1
     p = table[n]
     for k in range(1, n + 1):
         p = table[n - k] + (xMean - x[n - k]) * p
     return p
 
 def get_answer(x, z, y, nx, ny, nz, xMean, yMean, zMean):
-    print(x)
-    print(y)
-    print(z)
+    #print(x)
+    #print(y)
+    #print(z)
     yInter = np.zeros([nz + 1, ny + 1])
     for i in range(0, nz + 1):
         for j in range(0 , ny + 1):
             table = getDivededDiff(y[i], x[i][j], nx + 1)[0, :]
             yInter[i][j] = getNewtonPoly(table, y[i], xMean, nx + 1)
-    print(yInter)
+    data = pd.DataFrame(data=yInter)
+    print(data)
     zInter = []
     for i in range(nz + 1):
         table = getDivededDiff(y[i], yInter[i], ny + 1)[0, :]
         zInter.append(getNewtonPoly(table, y[i], yMean, ny + 1))
-    print(zInter)
+    data = pd.DataFrame(data=zInter)
+    print(data)
     table = getDivededDiff(z, zInter, nz + 1)[0, :]
     res = getNewtonPoly(table, z, zMean, nz + 1)
     return res
@@ -139,7 +129,7 @@ def get_answer(x, z, y, nx, ny, nz, xMean, yMean, zMean):
 if __name__ == '__main__':
     nx, ny, nz = get_polynomial_degree()
     xMean, yMean, zMean = map(float, input("Input x, y, z: ").split())
-    linesz, linesx, linesy = [], [], []
-    table, linesy, linesz = get_data(linesz, linesx, linesy)
-    x, y, z, table = table_for_nuoton(xMean, yMean, zMean, nx, ny, nz)
+    xArr, yArr, table = [], [], []
+    table, yArr, zArr = get_data(table, xArr, yArr)
+    x, y, z, table = getnTable(xMean, yMean, zMean, nx, ny, nz, xArr, yArr, zArr)
     print(get_answer(table, z, y, nx, ny, nz, xMean, yMean, zMean))

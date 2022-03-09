@@ -6,10 +6,10 @@ def get_polynomial_degree():
     nx, ny, nz = map(int, input("Input polynomials degrees: ").split())
     return nx, ny, nz
 
+
 def get_data(zArr, xArr, yArr):
     file = open("2.txt")
     table_lines = [line.strip() for line in file]
-    z = 0
     coly = 5
     ys = []
     matrix = []
@@ -25,14 +25,14 @@ def get_data(zArr, xArr, yArr):
             xs = list(map(float, line[3:].split()))
             xArr.append(xs)
         else:
-            linesnum = list(map(float, line.split()))
-            matrix.append(linesnum)
-            y = linesnum[0]
+            lineList = list(map(float, line.split()))
+            matrix.append(lineList)
+            y = lineList[0]
             ys.append(y)
             if (len(ys) == coly):
                 yArr.append(ys)
                 ys = []
-            linesnum.pop(0)
+            lineList.pop(0)
     table.append(matrix)
     return table, yArr, zArr
         
@@ -45,7 +45,7 @@ def findCoefIndex(line, coef):
     return index
 
 
-def findStartEndIndexes(n, index):
+def findStartEndIndexes(n, index, line):
     start = 0
     end = 0
     if (index - n // 2 >= 0):
@@ -54,7 +54,7 @@ def findStartEndIndexes(n, index):
         end = n + 1
     else:
         end = index + n // 2 + n % 2 + 1
-    if (end > n + 1):
+    if (end > len(line)):
         end = n + 1
         start = end - n - 1
     return start, end
@@ -62,7 +62,7 @@ def findStartEndIndexes(n, index):
 def getnArr(coef, n, line):
     newArr = []
     index = findCoefIndex(line, coef)
-    start, end = findStartEndIndexes(n, index)
+    start, end = findStartEndIndexes(n, index, line)
     for i in range(start, end):
         newArr.append(line[i])
     return newArr

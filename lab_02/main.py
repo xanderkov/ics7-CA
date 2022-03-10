@@ -8,7 +8,7 @@ def get_polynomial_degree():
 
 
 def get_data(zArr, xArr, yArr):
-    file = open("2.txt")
+    file = open("1.txt")
     table_lines = [line.strip() for line in file]
     coly = 5
     ys = []
@@ -104,25 +104,27 @@ def getNewtonPoly(table, x, xMean, n):
         p = table[n - k] + (xMean - x[n - k]) * p
     return p
 
-def get_answer(x, z, y, nx, ny, nz, xMean, yMean, zMean):
-    #print(x)
-    #print(y)
-    #print(z)
-    yInter = np.zeros([nz + 1, ny + 1])
-    for i in range(0, nz + 1):
-        for j in range(0 , ny + 1):
-            table = getDivededDiff(y[i], x[i][j], nx + 1)[0, :]
-            yInter[i][j] = getNewtonPoly(table, y[i], xMean, nx + 1)
-    data = pd.DataFrame(data=yInter)
-    print(data)
-    zInter = []
+def get_answer(table, x, z, y, nx, ny, nz, xMean, yMean, zMean):
+    print(x)
+    print(y)
+    print(z)
+    print(table)
+    zobsh = []
     for i in range(nz + 1):
-        table = getDivededDiff(y[i], yInter[i], ny + 1)[0, :]
-        zInter.append(getNewtonPoly(table, y[i], yMean, ny + 1))
-    data = pd.DataFrame(data=zInter)
-    print(data)
-    table = getDivededDiff(z, zInter, nz + 1)[0, :]
-    res = getNewtonPoly(table, z, zMean, nz + 1)
+        x_for_y = []
+        for j in range(ny + 1):
+            #print(x[i], table[i][j], nx + 1)
+            trgl = getDivededDiff(x[i], table[i][j], nx + 1)[0, :]
+            #print(table[i][j])
+            yzn = getNewtonPoly(trgl, x[i], xMean, nx + 1)
+            x_for_y.append(yzn)
+        print(x_for_y)
+        trgl = getDivededDiff(y[i], x_for_y, ny + 1)[0, :]
+        zRes = getNewtonPoly(trgl, y[i], yMean, ny + 1)
+        zobsh.append(zRes)
+    print(zobsh)
+    trgl = getDivededDiff(z, zobsh, nz + 1)[0, :]
+    res = getNewtonPoly(trgl, z, zMean, nz + 1)
     return res
     
 
@@ -132,4 +134,4 @@ if __name__ == '__main__':
     xArr, yArr, table = [], [], []
     table, yArr, zArr = get_data(table, xArr, yArr)
     x, y, z, table = getnTable(xMean, yMean, zMean, nx, ny, nz, xArr, yArr, zArr)
-    print(get_answer(table, z, y, nx, ny, nz, xMean, yMean, zMean))
+    print(get_answer(table, x, z, y, nx, ny, nz, xMean, yMean, zMean))

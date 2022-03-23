@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 def make_table(N=11):
-    data = pd.read_csv("points.csv")
+    data = pd.read_csv("test.csv")
     data.head(data.size)
     print(data)
     return {'x' : data['x'].values, 'y' : data['y'].values}
@@ -38,7 +38,7 @@ def countCoefSplain(data, N):
 
     # с помощью коэффициентов c находим коэффициенты b и d
     data['b'] = [None] + list((data['y'][i] - data['y'][i - 1]) / data['h'][i] -
-                            data['h'][i] * (data['c'][i + 1] - 2 * data['c'][i]) / 3
+                            data['h'][i] * (data['c'][i + 1] + 2 * data['c'][i]) / 3
                             for i in range(1, N))
 
     data['d'] = [None] + list((data['c'][i + 1] - data['c'][i]) / 3 / data['h'][i]
@@ -64,7 +64,6 @@ def count_polynom3(a, b, c, d, x0, x):
     return (a + b * (x - x0) + c * (x - x0) ** 2 + d * (x -x0) ** 3)
 
 def makeSpline(data, N, x):
-    
     data = countCoefSplain(data, N)
     coeffs = choose_coeffs(data, x, N)
     res_spline = count_polynom3(*coeffs, x)
@@ -77,7 +76,7 @@ def main():
     x1 = 0.5
     res_spline1 = makeSpline(data, N, x1)
 
-    x2 = 8.5
+    x2 = 1
     res_spline2 = makeSpline(data, N, x2)
     res_newton1 = Newton.makeNewtonAprox(data['x'], data['y'], 3, x1)
     res_newton2 = Newton.makeNewtonAprox(data['x'], data['y'], 3, x2)
@@ -96,12 +95,12 @@ def main():
     yGraph = np.zeros(xGraph.size)
     for i in range(xGraph.size):
         yGraph[i] = Newton.makeNewtonAprox(data['x'], data['y'], 3, xGraph[i])
-    xSpline = np.arange(data['x'][1], data['x'][N - 2], 0.01)
-    ySpline = np.zeros(xGraph.size)
+    xSpline = np.arange(data['x'][0], data['x'][N - 2], 0.01)
+    ySpline = np.zeros(xSpline.size)
     for i in range(xSpline.size):
         ySpline[i] = makeSpline(data, N, xGraph[i])
     plt.plot(xGraph, yGraph)
-    plt.plot(xGraph, ySpline)
+    plt.plot(xSpline, ySpline)
     plt.plot(data['x'], data['y'], 'bo')
     plt.show()
     

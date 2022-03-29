@@ -79,8 +79,21 @@ def getNewtonPoly(table, x, xMean, n):
         p = table[n - k] + (xMean - x[n - k]) * p
     return p
 
+def getNewtonDif2(table, x, x0, n):
+    a = 2 * table[1] + 2 * table[2] * (x0 - x[0]) + 2 * table[2] * (2 * x0 - x[1] - x[2])
+    b = 2 * (2 * x0 - x[2] - x[3]) * (table[3] * (x0 - x[0]) + table[3] * (x0 - x[1]))
+    c = 2 * table[3] * (x0 - x[0]) * (x0 - x[1])
+    d = 2 * table[3] * (x0 - x[2]) * (x0 - x[3])
+    return  a + b + c + d
+
 
 def makeNewtonAprox(x, y, n, x0):
     x_new, y_new = prepare_arrays_newton(x, y, n, x0)
     coef = getDivededDiff(x_new, y_new, n + 1)
     return getNewtonPoly(coef, x_new, x0, n + 1)
+
+def makeNewtonAproxDif2(x, y, n, x0):
+    n = 3
+    x_new, y_new = prepare_arrays_newton(x, y, n, x0)
+    coef = getDivededDiff(x_new, y_new, n + 1)
+    return getNewtonDif2(coef, x_new, x0, n + 1)

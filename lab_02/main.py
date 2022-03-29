@@ -46,25 +46,25 @@ def findCoefIndex(line, coef):
 
 
 def findStartEndIndexes(n, index, line):
-    start = 0
-    end = 0
-    if (index - n // 2 >= 0):
-        start = index - n // 2
-    if (start == 0):
-        end = n + 1
-    else:
-        end = index + n // 2 + n % 2 + 1
-    if (end > len(line)):
-        end = n + 1
-        start = end - n - 1
-    return start, end
+    left = index
+    right = index
+    for i in range(n - 1):
+        if i % 2 != 0:
+            if left == 0:
+                right += 1
+            else:
+                left -= 1
+        else:
+            if right == len(line) - 1:
+                left -= 1
+            else:
+                right += 1
+    return line[left:right + 1]
 
 def getnArr(coef, n, line):
     newArr = []
     index = findCoefIndex(line, coef)
-    start, end = findStartEndIndexes(n, index, line)
-    for i in range(start, end):
-        newArr.append(line[i])
+    newArr = findStartEndIndexes(n + 1, index, line)
     return newArr
     
 def getnTable(x, y, z, nx, ny, nz, xArr, yArr, zArr):

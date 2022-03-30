@@ -135,3 +135,21 @@ def spline(data, x, start, end):
     y = countPolynom(x, xValues, index, coefs)
 
     return y
+
+
+def findcn(xValues, yValues, start, end):
+    size = len(xValues) - 1
+    i = size
+    h2 = xValues[i] - xValues[i - 1]       # hi
+    h1 = xValues[i - 1] - xValues[i - 2]   # hi-1
+    ro = end
+
+    tetaValues = [start, end]
+    ksiValues = [start, end]
+    fiCur = fi(yValues[i - 2], yValues[i - 1], yValues[i], h1, h2)
+    ksiCur = ksi(ksiValues[0], h1, h2)
+    tetaCur = teta(fiCur, tetaValues[0], ksiValues[0], h1, h2)
+    cn = ((yValues[i] - yValues[i - 1])/h2 - ro/6*h2 - (yValues[i - 1] - yValues[i - 2])/h1 + tetaCur / ksiCur * (h2 - h1))
+    cn = cn / (h2 / ksiCur + h1 / ksiCur - h1 * h1 - h2 / 3 - h1)
+    return cn
+    

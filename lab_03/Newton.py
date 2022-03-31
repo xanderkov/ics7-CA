@@ -92,8 +92,21 @@ def makeNewtonAprox(x, y, n, x0):
     coef = getDivededDiff(x_new, y_new, n + 1)
     return getNewtonPoly(coef, x_new, x0, n + 1)
 
+def df(table, x, x0):
+    x1 = getNewtonPoly(table, x, x0, 10)
+    x2 = getNewtonPoly(table, x, x0 + 0.00001, 10)
+    return (x2 - x1) / 0.00001
+
+
+def ddf(table, x, x0):
+    dx1 = df(table, x, x0)
+    dx2 = df(table, x, x0 + 0.00002)
+    return (dx2 - dx1) / 0.00002
+
 def makeNewtonAproxDif2(x, y, n, x0):
-    n = 3
+    n = 10
     x_new, y_new = prepare_arrays_newton(x, y, n, x0)
+    
     coef = getDivededDiff(x_new, y_new, n + 1)
-    return getNewtonDif2(coef, x_new, x0, n + 1)
+
+    return ddf(coef, x_new, x0)

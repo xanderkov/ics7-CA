@@ -21,11 +21,10 @@ def main():
     
     start1 = 0
     end1 = 0
-    start2 = Newton.makeNewtonAproxDif2(data['x'], data['y'], 3, x)
+    start2 = Newton.makeNewtonAproxDif2(data['x'], data['y'], 3, data['x'][0])
     end2 = 0
     start3 = Newton.makeNewtonAproxDif2(data['x'], data['y'], 3, data['x'][0])
     end3 = Newton.makeNewtonAproxDif2(data['x'], data['y'], 3, data['x'][-1])
-    end3 = Spline.findcn(data['x'], data['y'], start3, end3)
     res_spline1 = Spline.spline(data, x, start1, end1)
     res_spline2 = Spline.spline(data, x, start2, end2)
     res_spline3 = Spline.spline(data, x, start3, end3)

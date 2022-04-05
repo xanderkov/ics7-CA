@@ -36,7 +36,7 @@ def calcHValues(xValues):
 def calcCValues(xValues, yValues, start, end):
     sizeX = len(xValues)
 
-    cValues = [0] * (sizeX - 1)
+    cValues = [0] * (sizeX)
     cValues[0] = start
     cValues[1] = end
     ksiValues = [start, end]
@@ -55,7 +55,7 @@ def calcCValues(xValues, yValues, start, end):
 
     cValues[-1] = tetaValues[-1]
 
-    for i in range(sizeX - 2, 0, -1):
+    for i in range(sizeX - 1, 0, -1):
         cValues[i - 1] = C(cValues[i], ksiValues[i], tetaValues[i])
 
     return cValues

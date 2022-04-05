@@ -110,3 +110,10 @@ def makeNewtonAproxDif2(x, y, n, x0):
     coef = getDivededDiff(x_new, y_new, n + 1)
 
     return ddf(coef, x_new, x0)
+
+
+def getNewtonTable2(x, y, n, x0):
+    n = 2
+    x_new, y_new = prepare_arrays_newton(x, y, n, x0)
+    coef = getDivededDiff(x_new, y_new, n + 1)
+    return coef[n] * 2

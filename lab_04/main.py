@@ -8,7 +8,7 @@ def phi(x, k):
 	return pow(x, k)
 
 def loadTableXY():
-    data = pd.read_csv("random.csv")
+    data = pd.read_csv("points.csv")
     data.head(data.size)
     print(data)
     x = data['x'].values
@@ -49,7 +49,7 @@ def matr_for_gauss(x, y, ro, n, N):
             sum_yi += phi(x[j], i) * ro[j] * y[j]
         sum_x_y[i] = sum_yi
 
-    gmatr = np.zeros(n)
+    gmatr = []
     for i in range(n):
         gstr = []
         for j in range(n):

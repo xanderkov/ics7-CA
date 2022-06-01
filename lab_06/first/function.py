@@ -1,12 +1,8 @@
-from math import sqrt
-from gauss import gauss_integrate
-from simpson import simpson_integrate
+DELTA = 1e-7
 
-def function(n: int, m: int) -> float:
-    def f1(y):
-        def f(x):
-            return sqrt(x * x + y * y)
-        x1 = 1 - sqrt(1 - y * y)
-        x2 = 1 + sqrt(1 - y * y)
-        return simpson_integrate(f, x1, x2, m)
-    return gauss_integrate(f1, -1, 1, n)
+
+def f(x, y):
+    if (x - 1) ** 2 + y ** 2 - 1 > DELTA:
+        return 0
+    else:
+        return (x ** 2 + y ** 2) ** 0.5

@@ -1,34 +1,20 @@
 from matplotlib import pyplot as plt
 from numpy import linspace, arange
+from prettytable import PrettyTable
+from gauss import *
+from function import *
 
-from function import function
+N_MAX = 15
+M_MAX = 15
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-
-major_ticks = linspace(0, 10, 6)
-minor_ticks = linspace(0, 10, 21)
-
-ax.set_xticks(major_ticks)
-ax.set_xticks(minor_ticks, minor=True)
-
-
-ax.grid(which='both')
-
-ax.grid(which='minor', alpha=0.4)
-ax.grid(which='major', alpha=0.8)
-
-n = [i for i in range(2, 10)]
-m = 10
-z = [function(ni, m) for ni in n]
-ax.plot(n, z, label=f"z(n, {m})")
-
-n = 10
-m = [i for i in range(2, 10)]
-z = [function(n, mi) for mi in m]
-ax.plot(m, z, label=f"z({n}, m)")
-
-plt.legend()
-plt.xlabel("z")
-plt.ylabel("n, m").set_rotation(0)
-plt.show()
+x_left = 0
+x_right = 2
+y_bottom = -1
+y_top = 1
+table = PrettyTable(['n\m'] + list(range(2, M_MAX)))
+for n in range(2, N_MAX):
+    string = [n]
+    for m in range(2, M_MAX):
+        string.append(f'{gauss_integ(n, m, x_left, x_right, y_bottom, y_top, f):5.5f}')
+    table.add_row(string)
+print(table)

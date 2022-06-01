@@ -7,7 +7,8 @@ from math import cos, pi
 
 # Возвращает значение полинома Лежандра n-го порядка
 def legendre(n: int, x: float) -> float:
-    if n < 2: return [1, x][n]
+    if n < 2: 
+        return [1, x][n]
     P1, P2 = legendre(n - 1, x), legendre(n - 2, x)
     return ((2 * n - 1) * x * P1 - (n - 1) * P2) / n
 

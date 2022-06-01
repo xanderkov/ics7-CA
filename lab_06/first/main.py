@@ -11,13 +11,10 @@ minor_ticks = linspace(0, 10, 21)
 
 ax.set_xticks(major_ticks)
 ax.set_xticks(minor_ticks, minor=True)
-# ax.set_yticks(linspace(0, 1, 6))
-# ax.set_yticks(linspace(0, 1, 11), minor=True)
 
-# And a corresponding grid
+
 ax.grid(which='both')
 
-# Or if you want different settings for the grids:
 ax.grid(which='minor', alpha=0.4)
 ax.grid(which='major', alpha=0.8)
 
@@ -34,5 +31,4 @@ ax.plot(m, z, label=f"z({n}, m)")
 plt.legend()
 plt.xlabel("z")
 plt.ylabel("n, m").set_rotation(0)
-#plt.grid()
 plt.show()
